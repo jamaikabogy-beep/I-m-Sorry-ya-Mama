@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حبيبي🫂</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 450px;
+            height: 95vh;
+            background: #e5ddd5;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* الهيدر */
+        .header {
+            background: #075e54;
+            color: white;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .profile-pic {
+            width: 45px;
+            height: 45px;
+            background: #eee;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #fff;
+        }
+
+        /* منطقة الشات */
+        .chat-box {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+        }
+
+        .message {
+            background: white;
+            color: black;
+            padding: 10px 15px;
+            border-radius: 15px;
+            border-top-right-radius: 0;
+            max-width: 85%;
+            align-self: flex-start;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            font-size: 16px;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* شاشة البداية - معدلة لضمان الضغط */
+        #initialScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #e5ddd5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999; /* أعلى حاجة في الصفحة */
+        }
+
+        .btn-main {
+            padding: 15px 45px;
+            margin: 10px;
+            border: none;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: block;
+            width: 200px;
+            pointer-events: auto; /* تأكيد قابلية الضغط */
+        }
+
+        #yesBtn { background: #25d366; color: white; }
+        #noBtn { background: #ff4d6d; color: white; }
+
+        #videoBtn {
+            display: none;
+            margin: 20px auto;
+            background: #ff4d6d;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 90%;
+            font-size: 18px;
+            box-shadow: 0 0 15px #ff4d6d;
+        }
+
+        .emoji-drop { position: fixed; top: -50px; font-size: 24px; z-index: 10000; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+        
+        .typing { color: #555; font-size: 14px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <div id="initialScreen">
+            <h2 style="color: #075e54; margin-bottom: 20px;">صافي يا لبن؟ 🥺</h2>
+            <button class="btn-main" id="yesBtn" onclick="acceptApology()">مش زعلانه</button>
+            <button class="btn-main" id="noBtn" onclick="rejectApology()">زعلانه</button>
+        </div>
+
+        <div class="header">
+            <img src="جوجو.jpg" class="profile-pic" id="profileImg">
+            <div class="user-info">
+                <h3 style="margin:0">My Home 🫂💗</h3>
+                <span id="status">أونلاين</span>
+            </div>
+        </div>
+
+        <div class="chat-box" id="chatBox">
+            <div class="typing" id="typingIndicator">My Home يكتب الآن...</div>
+        </div>
+    </div>
+
+    <script>
+        const messages = [
+            "توتا حبيبت عمري انا عارف انك مضايقه من اللي حصل يا قمري ✨🫶🏻.",
+            "حقك عليا انا يا نن عيني يا روحي 💗.",
+            "متزعليث من ابنك انا اثف 🥹🩷.",
+            "شوفي ايه اللي يرضيكي ونا اعمله يا حبيبي .",
+            "انا عارف انك نازله عشاني يا عمري كلو و جايه علي نفسك و استحملتي كتير اوي يا حبيبتي 💗🫶🏻 .",
+            "بجد اثف يا حبيبت قلبي يا مولاتي انتي 🥹🩷.",
+            "بحبك لاخر يوم في عمري يا احن قلب في الدنيا 🫀💖 .",
+            "والله م هسيبك ابدا يا مريم يا حبيبتي و الله هتجوزك يا توتا 🩵🌹.",
+            "بحبك ."
+        ];
+
+        function rejectApology() {
+            alert("مينفعش تبقي زعلانه وابنك موجود يا مامي 🥹🩷");
+        }
+
+        function acceptApology() {
+            document.getElementById('initialScreen').style.display = 'none';
+            document.getElementById('status').innerText = 'يكتب الآن...';
+            startEmojiRain();
+            showMessages(0);
+        }
+
+        async function showMessages(index) {
+            if (index < messages.length) {
+                document.getElementById('typingIndicator').style.display = 'block';
+                const chatBox = document.getElementById('chatBox');
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+                await new Promise(r => setTimeout(r, 2000));
+
+                document.getElementById('typingIndicator').style.display = 'none';
+                const msg = document.createElement('div');
+                msg.className = 'message';
+                msg.innerText = messages[index];
+                chatBox.appendChild(msg);
+                
+                chatBox.scrollTop = chatBox.scrollHeight;
+                showMessages(index + 1);
+            } else {
+                document.getElementById('status').innerText = 'أونلاين';
+                showFinal();
+            }
+        }
+
+        function showFinal() {
+            const btn = document.createElement('button');
+            btn.id = 'videoBtn';
+            btn.innerText = 'انتي نور عيني يا مريم 🫶🏻';
+            btn.onclick = function() {
+                window.location.href = 'https://youtube.com/shorts/RvuIIGTZ0OA?si=cL39ISXEzZ0RTTCg'; // حط لينك الفيديو هنا
+            };
+            btn.style.display = 'block';
+            document.getElementById('chatBox').appendChild(btn);
+        }
+
+        function startEmojiRain() {
+            const emojis = ['❤️', '💖', '🫂', '🌹', '🌸', '✨'];
+            setInterval(() => {
+                const e = document.createElement('div');
+                e.className = 'emoji-drop';
+                e.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                e.style.left = Math.random() * 100 + 'vw';
+                e.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.body.appendChild(e);
+                setTimeout(() => e.remove(), 4000);
+            }, 150);
+        }
+    </script>
+</body>
+</html>
